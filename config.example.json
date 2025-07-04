@@ -1,3 +1,4 @@
 {
-    "bot_token": "Token from https://t.me/BotFather"
+    "bot_token": "Token from https://t.me/BotFather",
+    "database_url": "sqlite:./db.sqlite?mode=rwc"
 }
