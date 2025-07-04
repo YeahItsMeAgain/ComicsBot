@@ -55,6 +55,9 @@ impl ComicsBot {
             Some(cmd) if cmd == ChannelCommand::Register.as_cmd_str() => {
                 channel_commands::register::handler(bot, msg).await?
             }
+            Some(cmd) if cmd == ChannelCommand::Help.as_cmd_str() => {
+                channel_commands::help::handler(bot, msg).await?
+            }
             Some(_) => {
                 bot.send_message(
                     msg.chat.id,
