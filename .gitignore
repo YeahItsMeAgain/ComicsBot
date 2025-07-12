@@ -41,3 +41,5 @@ Cargo.lock
 .env
 config.json
 db.sqlite
+*.bin
+store.kv
