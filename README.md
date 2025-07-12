@@ -1,13 +1,13 @@
 
 # Running migrations
-> cargo install sea-orm-cli
-> DATABASE_URL=sqlite:./db.sqlite?mode=rwc migration/target/debug/migration refresh
-> sea-orm-cli migrate up
-> sea-orm-cli migrate refresh
+> cargo install sea-orm-cli  
+> DATABASE_URL=sqlite:./db.sqlite?mode=rwc migration/target/debug/migration refresh  
+> sea-orm-cli migrate up  
+> sea-orm-cli migrate refresh  
 
 # Running migrations directly
-> cd migration
-> DATABASE_URL=sqlite:../db.sqlite?mode=rwc cargo run
+> cd migration  
+> DATABASE_URL=sqlite:../db.sqlite?mode=rwc cargo run  
 
 # Generating entities
-> sea-orm-cli generate entity -o src/db/entities
+> sea-orm-cli generate entity -o src/db/entities  
