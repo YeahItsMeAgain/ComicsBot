@@ -1,6 +1,6 @@
 use crate::{
     bot::{
-        channel_commands::{self, ChannelCommand},
+        channel_commands::{self},
         commands::{self, Command},
     },
     config::CONFIG,
@@ -51,21 +51,21 @@ impl ComicsBot {
     }
 
     async fn channel_command_handler(bot: Bot, msg: Message) -> ResponseResult<()> {
-        match msg.text() {
-            Some(cmd) if cmd == ChannelCommand::Register.as_cmd_str() => {
-                channel_commands::register::handler(bot, msg).await?
+        let text = msg.text().unwrap_or("");
+        match text.split_once(' ').unwrap_or((text, "")) {
+            ("/help", _) => channel_commands::help::handler(bot, msg.clone()).await?,
+            ("/register", _) => channel_commands::register::handler(bot, msg.clone()).await?,
+            ("/list", _) => channel_commands::list::handler(bot, msg.clone()).await?,
+            ("/subscribe", comics_provider) => {
+                channel_commands::subscribe::handler(bot, msg.clone(), comics_provider).await?
             }
-            Some(cmd) if cmd == ChannelCommand::Help.as_cmd_str() => {
-                channel_commands::help::handler(bot, msg).await?
-            }
-            Some(_) => {
+            _ => {
                 bot.send_message(
                     msg.chat.id,
                     "Sorry, I couldn't understand that. Try using /help.",
                 )
                 .await?;
             }
-            None => {}
         }
         Ok(())
     }
