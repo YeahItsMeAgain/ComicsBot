@@ -31,6 +31,9 @@ async fn main() {
     log::info!("Initializing the bot");
     let bot = bot::comics_bot::ComicsBot::default();
 
+    log::info!("Starting schedules");
+    periodic::schedule(bot.bot.clone()).await;
+
     log::info!("Starting the bot");
     bot.start().await;
 }
