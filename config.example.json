@@ -1,5 +1,7 @@
 {
     "bot_token": "Token from https://t.me/BotFather",
     "database_url": "sqlite:./db.sqlite?mode=rwc",
-    "persistent_store_path": "./store.kv"
+    "persistent_store_path": "./store.kv",
+    "users": [],
+    "admins": []
 }

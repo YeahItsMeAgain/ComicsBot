@@ -28,7 +28,11 @@ impl ComicsBot {
         let handler = dptree::entry()
             .branch(
                 Update::filter_message()
-                    .branch(filter_command::<Command, _>().endpoint(Self::commands_handler))
+                    .branch(
+                        dptree::filter(Self::filter_allowed_requests)
+                            .branch(filter_command::<Command, _>().endpoint(Self::commands_handler))
+                            .branch(dptree::endpoint(Self::msg_commands_handler)),
+                    )
                     .branch(dptree::endpoint(Self::handle_random_messages)),
             )
             .branch(
@@ -74,7 +78,39 @@ impl ComicsBot {
         Ok(())
     }
 
-    async fn handle_random_messages(_: Bot, msg: Message) -> ResponseResult<()> {
+    fn filter_allowed_requests(msg: Message) -> bool {
+        let user_id = msg.clone().from;
+        if user_id.is_none() {
+            return false;
+        }
+
+        let user_id = user_id.unwrap().id.0;
+        if !CONFIG.users.contains(&user_id) {
+            return false;
+        }
+
+        let chat_id = msg.chat.id.0;
+        if let Some(text) = msg.text() {
+            log::info!(
+                "<{}:{}:{}> used: {}",
+                user_id,
+                msg.chat.username().unwrap_or(""),
+                chat_id,
+                text
+            );
+        }
+        true
+    }
+
+    async fn msg_commands_handler(_: Bot, msg: Message) -> ResponseResult<()> {
+        if msg.text().is_none() {
+            return Ok(());
+        }
+
+        Ok(())
+    }
+
+    async fn handle_random_messages(_: Bot, _: Message) -> ResponseResult<()> {
         Ok(())
     }
 }

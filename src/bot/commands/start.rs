@@ -1,10 +1,25 @@
+use crate::bot::admin::is_from_admin;
 use teloxide::{
     Bot,
+    payloads::SendMessageSetters,
     prelude::{Requester, ResponseResult},
-    types::Message,
+    types::{KeyboardButton, KeyboardMarkup, Message},
 };
 
+const LIST_SUBSCRIPTIONS_COMMAND: &str = "📚 List";
+
 pub async fn handler(bot: Bot, msg: Message) -> ResponseResult<()> {
+    if is_from_admin(&msg) {
+        bot.send_message(msg.chat.id, "👋 Welcome Oh Great Admin")
+            .reply_markup(
+                KeyboardMarkup::new([[KeyboardButton::new(LIST_SUBSCRIPTIONS_COMMAND)]])
+                    .resize_keyboard()
+                    .persistent(),
+            )
+            .await?;
+        return Ok(())
+    }
+
     bot.send_message(
         msg.chat.id,
         format!(

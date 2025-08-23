@@ -13,6 +13,8 @@ pub struct Config {
     pub database_url: String,
     pub persistent_store_path: String,
     pub cyanide_and_happiness: ProviderConfig,
+    pub users: Vec<u64>,
+    pub admins: Vec<u64>
 }
 
 pub static CONFIG: Lazy<Config> = Lazy::new(|| Config::from_config_file("config.json").unwrap());
