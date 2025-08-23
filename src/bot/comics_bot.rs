@@ -1,6 +1,6 @@
 use crate::{
     bot::{
-        admin::{self, helpers::is_from_admin, LIST_SUBSCRIPTIONS_COMMAND, UPDATE_NOW_COMMAND},
+        admin::{self, LIST_SUBSCRIPTIONS_COMMAND, UPDATE_NOW_COMMAND, helpers::is_from_admin},
         channel_commands::{self},
         commands::{self, Command},
     },
@@ -71,13 +71,7 @@ impl ComicsBot {
             ("/unsubscribe", comics_provider) => {
                 channel_commands::unsubscribe::handler(bot, msg.clone(), comics_provider).await?
             }
-            _ => {
-                bot.send_message(
-                    msg.chat.id,
-                    "Sorry, I couldn't understand that. Try using /help.",
-                )
-                .await?;
-            }
+            _ => {}
         }
         Ok(())
     }
