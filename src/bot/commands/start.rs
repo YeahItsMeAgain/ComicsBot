@@ -1,4 +1,4 @@
-use crate::bot::admin::is_from_admin;
+use crate::bot::admin::{LIST_SUBSCRIPTIONS_COMMAND, helpers::is_from_admin};
 use teloxide::{
     Bot,
     payloads::SendMessageSetters,
@@ -6,10 +6,8 @@ use teloxide::{
     types::{KeyboardButton, KeyboardMarkup, Message},
 };
 
-const LIST_SUBSCRIPTIONS_COMMAND: &str = "📚 List";
-
 pub async fn handler(bot: Bot, msg: Message) -> ResponseResult<()> {
-    if is_from_admin(&msg) {
+    if is_from_admin(msg.clone()) {
         bot.send_message(msg.chat.id, "👋 Welcome Oh Great Admin")
             .reply_markup(
                 KeyboardMarkup::new([[KeyboardButton::new(LIST_SUBSCRIPTIONS_COMMAND)]])
@@ -17,7 +15,7 @@ pub async fn handler(bot: Bot, msg: Message) -> ResponseResult<()> {
                     .persistent(),
             )
             .await?;
-        return Ok(())
+        return Ok(());
     }
 
     bot.send_message(

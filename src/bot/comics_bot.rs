@@ -1,5 +1,6 @@
 use crate::{
     bot::{
+        admin::{self, LIST_SUBSCRIPTIONS_COMMAND, helpers::is_from_admin},
         channel_commands::{self},
         commands::{self, Command},
     },
@@ -31,7 +32,10 @@ impl ComicsBot {
                     .branch(
                         dptree::filter(Self::filter_allowed_requests)
                             .branch(filter_command::<Command, _>().endpoint(Self::commands_handler))
-                            .branch(dptree::endpoint(Self::msg_commands_handler)),
+                            .branch(
+                                dptree::filter(is_from_admin)
+                                    .endpoint(Self::admin_msg_commands_handler),
+                            ),
                     )
                     .branch(dptree::endpoint(Self::handle_random_messages)),
             )
@@ -102,11 +106,15 @@ impl ComicsBot {
         true
     }
 
-    async fn msg_commands_handler(_: Bot, msg: Message) -> ResponseResult<()> {
+    async fn admin_msg_commands_handler(bot: Bot, msg: Message) -> ResponseResult<()> {
         if msg.text().is_none() {
             return Ok(());
         }
 
+        match msg.text().unwrap() {
+            LIST_SUBSCRIPTIONS_COMMAND => admin::list_subscriptions::handler(bot, msg).await?,
+            _ => {}
+        }
         Ok(())
     }
 
