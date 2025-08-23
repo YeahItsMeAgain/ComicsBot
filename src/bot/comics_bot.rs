@@ -1,6 +1,6 @@
 use crate::{
     bot::{
-        admin::{self, LIST_SUBSCRIPTIONS_COMMAND, helpers::is_from_admin},
+        admin::{self, helpers::is_from_admin, LIST_SUBSCRIPTIONS_COMMAND, UPDATE_NOW_COMMAND},
         channel_commands::{self},
         commands::{self, Command},
     },
@@ -113,6 +113,7 @@ impl ComicsBot {
 
         match msg.text().unwrap() {
             LIST_SUBSCRIPTIONS_COMMAND => admin::list_subscriptions::handler(bot, msg).await?,
+            UPDATE_NOW_COMMAND => admin::update_now::handler(bot, msg).await?,
             _ => {}
         }
         Ok(())
