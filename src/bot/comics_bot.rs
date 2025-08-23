@@ -59,6 +59,9 @@ impl ComicsBot {
             ("/subscribe", comics_provider) => {
                 channel_commands::subscribe::handler(bot, msg.clone(), comics_provider).await?
             }
+            ("/unsubscribe", comics_provider) => {
+                channel_commands::unsubscribe::handler(bot, msg.clone(), comics_provider).await?
+            }
             _ => {
                 bot.send_message(
                     msg.chat.id,

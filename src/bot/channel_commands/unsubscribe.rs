@@ -36,7 +36,7 @@ pub async fn handler(bot: Bot, msg: Message, comics_provider_name: &str) -> Resp
         return Ok(());
     };
 
-    let _ = channel_comics_provider_subscription::Entity::insert(
+    let _ = channel_comics_provider_subscription::Entity::delete(
         channel_comics_provider_subscription::ActiveModel {
             channel_id: ActiveValue::Set(channel.id),
             provider_id: ActiveValue::Set(comics_provider.id),
@@ -46,7 +46,7 @@ pub async fn handler(bot: Bot, msg: Message, comics_provider_name: &str) -> Resp
     .await;
     bot.send_message(
         msg.chat.id,
-        format!("Successfully subscribed to {}!", comics_provider.name),
+        format!("Successfully unsubscribed from {}!", comics_provider.name),
     )
     .await?;
     Ok(())
