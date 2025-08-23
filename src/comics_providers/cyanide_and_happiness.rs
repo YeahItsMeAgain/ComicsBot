@@ -1,8 +1,14 @@
+use crate::comics_providers::ComicsProviders;
+use crate::db::{
+    entities::{channel, channel_comics_provider_subscription, comics_provider},
+    get_db,
+};
 use crate::store::get_store;
 use anyhow::{Context, Result};
 use chrono::{DateTime, NaiveDateTime, Utc};
 use reqwest::{Client, Url};
 use scraper::{Html, Selector};
+use sea_orm::{ColumnTrait, EntityTrait, ModelTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, time::Duration};
 use teloxide::{
@@ -77,17 +83,14 @@ pub async fn notify_changes(bot: Bot) -> Result<()> {
             .json::<ComicsResponseData>()
             .await?;
 
-    let mut last_comic_timestamp = get_store()
-        .get(EXPLOSM_LAST_COMIC_TIMESTAMP_KEY)
-        .unwrap_or(Utc::now().timestamp().to_string())
-        .parse::<i64>()
-        .unwrap();
+    let mut last_comic_timestamp = get_last_comic_timestamp();
 
     log::info!(
         "Iterating over explosm comics, last comic date: {:?}",
         DateTime::from_timestamp(last_comic_timestamp, 0)
     );
 
+    let comic_provider = get_comics_provider().await?;
     // Iterate over the comics in order, parse and send the new ones to the subscribed channels.
     for (_year, comics) in comics_data.props.comics_archive {
         for (_index, comics) in comics {
@@ -114,21 +117,37 @@ pub async fn notify_changes(bot: Bot) -> Result<()> {
                     continue;
                 };
 
-                let chat_id = ChatId(0); // TODO - get the subscribed channels.
-                if let Err(e) = send_new_comic(
-                    &bot,
-                    chat_id,
-                    comic_url,
-                    comic_slug,
-                    published_at,
-                    comic_author,
-                )
-                .await
+                for subscription in comic_provider
+                    .find_related(channel_comics_provider_subscription::Entity)
+                    .all(get_db())
+                    .await?
                 {
-                    log::error!("{e}");
+                    let channel = subscription
+                        .find_related(channel::Entity)
+                        .one(get_db())
+                        .await?
+                        .unwrap();
+                    let chat_id = ChatId(channel.tgid);
+                    log::info!(
+                        "Notifying {channel:?} with new comic: {}",
+                        comic_url.clone()
+                    );
+
+                    if let Err(e) = send_new_comic(
+                        &bot,
+                        chat_id,
+                        comic_url.clone(),
+                        comic_slug.clone(),
+                        published_at,
+                        comic_author.clone(),
+                    )
+                    .await
+                    {
+                        log::error!("{e}");
+                    }
+                    // Maybe will us not get banned :]
+                    time::sleep(Duration::from_secs(1)).await;
                 }
-                // Maybe will us not get banned :]
-                time::sleep(Duration::from_millis(100)).await;
             }
         }
     }
@@ -144,6 +163,22 @@ pub async fn notify_changes(bot: Bot) -> Result<()> {
             )
         })?;
     Ok(())
+}
+
+async fn get_comics_provider() -> anyhow::Result<comics_provider::Model> {
+    Ok(comics_provider::Entity::find()
+        .filter(comics_provider::Column::Name.eq(ComicsProviders::CyanideAndHappiness.to_string()))
+        .one(get_db())
+        .await?
+        .unwrap())
+}
+
+fn get_last_comic_timestamp() -> i64 {
+    get_store()
+        .get(EXPLOSM_LAST_COMIC_TIMESTAMP_KEY)
+        .unwrap_or(Utc::now().timestamp().to_string())
+        .parse::<i64>()
+        .unwrap()
 }
 
 async fn send_new_comic(
