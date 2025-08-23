@@ -56,6 +56,7 @@ impl ComicsBot {
             ("/help", _) => channel_commands::help::handler(bot, msg.clone()).await?,
             ("/register", _) => channel_commands::register::handler(bot, msg.clone()).await?,
             ("/list", _) => channel_commands::list::handler(bot, msg.clone()).await?,
+            ("/info", _) => channel_commands::info::handler(bot, msg.clone()).await?,
             ("/subscribe", comics_provider) => {
                 channel_commands::subscribe::handler(bot, msg.clone(), comics_provider).await?
             }
