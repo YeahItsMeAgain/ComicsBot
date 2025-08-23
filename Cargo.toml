@@ -16,6 +16,7 @@ scraper = "0.23.1"
 sea-orm = { version = "1.1.13", features = ["macros", "runtime-async-std-native-tls", "sqlx-sqlite"] }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
+strum = { version = "0.27.2", features = ["derive"] }
 teloxide = { version = "0.16.0", features = ["macros"] }
 tokio = { version = "1.45.1", features = ["macros", "rt", "rt-multi-thread"] }
 tokio_schedule = "0.3.2"
