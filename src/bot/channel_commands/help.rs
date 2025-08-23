@@ -11,6 +11,7 @@ The available commands are:
 
 `/help` This help message
 `/register` Register your channel to the comics bot system
+`/unregister` Unregister your channel from the comics bot system
 `/list` List all available providers
 `/info` Display info such as your subscriptions
 `/subscribe <comics_provider>` Subscribe to a comics provider

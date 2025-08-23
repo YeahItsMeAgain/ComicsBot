@@ -63,6 +63,7 @@ impl ComicsBot {
         match text.split_once(' ').unwrap_or((text, "")) {
             ("/help", _) => channel_commands::help::handler(bot, msg.clone()).await?,
             ("/register", _) => channel_commands::register::handler(bot, msg.clone()).await?,
+            ("/unregister", _) => channel_commands::unregister::handler(bot, msg.clone()).await?,
             ("/list", _) => channel_commands::list::handler(bot, msg.clone()).await?,
             ("/info", _) => channel_commands::info::handler(bot, msg.clone()).await?,
             ("/subscribe", comics_provider) => {
