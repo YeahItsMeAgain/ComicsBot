@@ -21,6 +21,7 @@ async fn main() {
     db_connection_option.sqlx_logging_level(log::LevelFilter::Debug);
     let db: sea_orm::DatabaseConnection = Database::connect(db_connection_option).await.unwrap();
     db::DB.set(db).unwrap();
+    db::init().await.unwrap();
 
     log::info!("Setting app persistent store");
     let store: PersistentKeyValueStore<String, String> =
