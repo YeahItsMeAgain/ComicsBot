@@ -2,6 +2,7 @@ use once_cell::sync::OnceCell;
 use sea_orm::{DatabaseConnection, EntityTrait, sea_query::OnConflict};
 use strum::IntoEnumIterator;
 
+use migration::{Migrator, MigratorTrait};
 use crate::{comics_providers::ComicsProviders, db::entities::comics_provider};
 pub mod entities;
 
@@ -12,7 +13,13 @@ pub fn get_db() -> &'static DatabaseConnection {
 }
 
 pub async fn init() -> anyhow::Result<()> {
+    run_migrations().await?;
     create_comics_provider().await?;
+    Ok(())
+}
+
+pub async fn run_migrations() -> anyhow::Result<()> {
+    Migrator::up(get_db(), None).await?;
     Ok(())
 }
 
