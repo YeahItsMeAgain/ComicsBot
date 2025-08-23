@@ -43,3 +43,4 @@ config.json
 db.sqlite
 *.bin
 store.kv
+data/
