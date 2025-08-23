@@ -3,13 +3,12 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "channel")]
+#[sea_orm(table_name = "comics_provider")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     #[sea_orm(unique)]
-    pub tgid: i64,
-    pub title: String,
+    pub name: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -24,13 +23,13 @@ impl Related<super::channel_comics_provider_subscription::Entity> for Entity {
     }
 }
 
-impl Related<super::comics_provider::Entity> for Entity {
+impl Related<super::channel::Entity> for Entity {
     fn to() -> RelationDef {
-        super::channel_comics_provider_subscription::Relation::ComicsProvider.def()
+        super::channel_comics_provider_subscription::Relation::Channel.def()
     }
     fn via() -> Option<RelationDef> {
         Some(
-            super::channel_comics_provider_subscription::Relation::Channel
+            super::channel_comics_provider_subscription::Relation::ComicsProvider
                 .def()
                 .rev(),
         )

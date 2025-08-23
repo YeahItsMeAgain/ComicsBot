@@ -4,7 +4,7 @@ use sea_orm_migration::{prelude::*, schema::*};
 pub struct Migration;
 
 #[derive(DeriveIden)]
-enum Channel {
+pub enum Channel {
     Table,
     Id,
     Tgid,
