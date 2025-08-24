@@ -107,7 +107,7 @@ pub async fn notify_changes(bot: Bot) -> Result<()> {
                 let published_at =
                     NaiveDateTime::parse_from_str(&published_at, "%Y-%m-%d %H:%M:%S")?;
                 let published_at_timestamp = published_at.and_utc().timestamp();
-                if published_at_timestamp < last_comic_timestamp {
+                if published_at_timestamp <= last_comic_timestamp {
                     continue;
                 }
                 last_comic_timestamp = published_at_timestamp;
